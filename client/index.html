@@ -114,7 +114,7 @@
  // Load all categories from the backend and display them on the homepage
 async function loadCategories() {
   try {
-    const response = await fetch("http://localhost:5000/api/categories");
+    const response = await fetch("https://new-juzk.vercel.app/api/categories");
     const categories = await response.json();
     const container = document.getElementById("categories-list");
     container.innerHTML = "";
@@ -137,7 +137,7 @@ async function loadCategories() {
 // Load products that belong to a specific category
 async function loadProductsByCategory(categoryName) {
   try {
-    const response = await fetch("http://localhost:5000/api/products");
+    const response = await fetch("https://new-juzk.vercel.app/api/products");
     const products = await response.json();
     const filtered = products.filter(p => p.category === categoryName);
     const productContainer = document.getElementById("products-list");
@@ -162,7 +162,7 @@ async function loadProductsByCategory(categoryName) {
 // Load all products from the backend and show them on the homepage
 async function loadAllProducts() {
   try {
-    const response = await fetch("http://localhost:5000/api/products");
+    const response = await fetch("https://new-juzk.vercel.app/api/products");
     const products = await response.json();
     const productContainer = document.getElementById("products-list");
     productContainer.innerHTML = "";
@@ -189,7 +189,7 @@ async function addToCart(productId) {
   const userId = "guest"; // Static user for guest cart
 
   try {
-    await fetch("http://localhost:5000/api/cart", {
+    await fetch("https://new-juzk.vercel.app/api/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, productId, quantity: 1 })
@@ -207,7 +207,7 @@ async function addToCart(productId) {
 async function updateCartCount() {
   const userId = "guest";
   try {
-    const res = await fetch(`http://localhost:5000/api/cart/${userId}`);
+    const res = await fetch(`https://new-juzk.vercel.app/api/cart/${userId}`);
     const data = await res.json();
     
     const total = data.items
@@ -244,7 +244,7 @@ function showNextSlide() {
 // Load advertisement banners from backend and show them in carousel
 async function loadAdSlides() {
   try {
-    const response = await fetch("http://localhost:5000/api/ads");
+    const response = await fetch("https://new-juzk.vercel.app/api/ads");
     const ads = await response.json();
     const container = document.querySelector(".slide-container");
     container.innerHTML = "";
@@ -268,7 +268,7 @@ async function loadAdSlides() {
 async function updateCartCount() {
   const userId = "guest";
   try {
-    const res = await fetch(`http://localhost:5000/api/cart/${userId}`);
+    const res = await fetch(`https://new-juzk.vercel.app/api/cart/${userId}`);
     const data = await res.json();
     
     const total = data.items
