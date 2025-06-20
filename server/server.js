@@ -277,5 +277,12 @@ app.get("/api/ads", async (req, res) => {
   }
 });
 
+
+
+app.get('/', (req, res) => {
+  res.json({ output: "hi" });
+});
+
+
 // Server Start
 app.listen(5000, () => console.log("Server running on http://localhost:5000"));
