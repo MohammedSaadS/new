@@ -118,7 +118,7 @@
 
 
     async function loadCategories() {
-      const res = await fetch("http://localhost:5000/api/categories");
+      const res = await fetch("https://new-juzk.vercel.app/api/categories");
       const categories = await res.json();
 
       categorySelect.innerHTML = categories.map(cat =>
@@ -137,7 +137,7 @@
 
     window.deleteCategory = async function (id) {
       if (confirm("Are you sure you want to delete this category?")) {
-        await fetch(`http://localhost:5000/api/categories/${id}`, {
+        await fetch(`https://new-juzk.vercel.app/api/categories/${id}`, {
           method: "DELETE"
         });
         alert("Category deleted");
@@ -146,7 +146,7 @@
     };
 
     async function loadProducts() {
-      const res = await fetch("http://localhost:5000/api/products");
+      const res = await fetch("https://new-juzk.vercel.app/api/products");
       productList = await res.json();
       renderProducts();
     }
@@ -184,7 +184,7 @@
 
     window.deleteProduct = async function (id) {
       if (confirm("Are you sure you want to delete this product?")) {
-        await fetch(`http://localhost:5000/api/products/${id}`, {
+        await fetch(`https://new-juzk.vercel.app/api/products/${id}`, {
           method: "DELETE"
         });
         alert("Product deleted");
@@ -195,7 +195,7 @@
     categoryForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(categoryForm);
-      await fetch("http://localhost:5000/api/categories", {
+      await fetch("https://new-juzk.vercel.app/api/categories", {
         method: "POST",
         body: formData
       });
@@ -207,11 +207,11 @@
     productForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(productForm);
-      let url = "http://localhost:5000/api/products";
+      let url = "https://new-juzk.vercel.app/api/products";
       let method = "POST";
 
       if (currentEditingId) {
-        url = `http://localhost:5000/api/products/${currentEditingId}`;
+        url = `https://new-juzk.vercel.app/api/products/${currentEditingId}`;
         method = "PUT";
       }
 
@@ -237,7 +237,7 @@
     adForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(adForm);
-      const res = await fetch("http://localhost:5000/api/ads", {
+      const res = await fetch("https://new-juzk.vercel.app/api/ads", {
         method: "POST",
         body: formData
       });
@@ -252,7 +252,7 @@
     });
 
     async function loadAds() {
-      const res = await fetch("http://localhost:5000/api/ads");
+      const res = await fetch("https://new-juzk.vercel.app/api/ads");
       const ads = await res.json();
       adListDiv.innerHTML = ads.map(ad => `
         <img src="${ad.image}" alt="Ad" style="margin: 10px;" />
