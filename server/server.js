@@ -280,7 +280,7 @@ app.get("/api/ads", async (req, res) => {
 
 
 app.get('/', (req, res) => {
-  res.json({ output: "hi" });
+    res.send("Hi")
 });
 
 
