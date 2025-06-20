@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TechStore</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">TechStore</div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+    <div class="nav-right">
+      
+      <a href="cart.html" style="position: relative; color: white; text-decoration: none; font-weight: bold;">
+        🛒 Cart
+        <span id="cart-count" style="position: absolute; top: -8px; right: -15px; background-color: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px;">0</span>
+      </a>
+    </div>
+  </nav>
+
+  <section id="home" class="carousel slide-container"></section>
+
+  <section id="about" class="about-section" style="background-color: #f0f4f8; padding: 40px 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-family: Arial, sans-serif; animation: fadeIn 1s ease-in-out;">
+    <h2 style="text-align: center; color: #333; margin-bottom: 30px; font-size: 28px;">About TechStore</h2>
+    <div class="about-content" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; max-width: 1000px; margin: 0 auto; gap: 30px;">
+      <div class="about-image" style="flex: 1; min-width: 300px; animation: slideInLeft 1s ease-in-out;">
+        <img src="image/about.jpeg" alt="About TechStore" style="width: 100%; height: auto; border-radius: 10px; transition: transform 0.4s ease-in-out; box-shadow: 0 6px 16px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
+      </div>
+      <div class="about-text" style="flex: 1; min-width: 300px; color: #444; font-size: 16px; line-height: 1.6; animation: slideInRight 1s ease-in-out;">
+        <p><strong>TechStore</strong> is your one-stop destination for the latest in technology. Whether you're looking for high-performance laptops, the newest smartphones, or must-have accessories, we've got everything under one roof.</p>
+        <p>Enjoy fast delivery, unbeatable prices, and trusted customer support — all tailored to meet your tech needs with ease.</p>
+        <p>We cater to individuals, students, professionals, and businesses with a wide range of reliable, cutting-edge gadgets. Experience innovation and quality at TechStore, your trusted local tech shop.</p>
+      </div>
+    </div>
+    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+    </style>
+  </section>
+
+  <section id="categories-section">
+    <h2 class="glow-text">Categories</h2>
+    <div id="categories-list"></div>
+  </section>
+
+  <section id="products-section">
+    <h2 class="glow-text">Products</h2>
+    <div id="products-list"></div>
+  </section>
+<footer id="contact">
+  <div class="footer-container">
+
+    <div class="footer-section brand">
+      <h2 class="brand-name">Tech<span>Store</span></h2>
+      <p class="brand-description">
+        Discover premium gadgets at unbeatable prices.<br />
+        Explore our curated range of phones, laptops, smartwatches,<br />
+        headsets, and speakers — trusted by thousands.
+      </p>
+    </div>
+
+    <div class="footer-section">
+      <h3>Shop</h3>
+      <ul>
+        <li><a href="#products-list">Phones</a></li>
+        <li><a href="#products-list">Laptops</a></li>
+        <li><a href="#products-list">Smartwatches</a></li>
+        <li><a href="#products-list">Headsets</a></li>
+        <li><a href="#products-list">Speakers</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Contact</h3>
+      <p>Email: support@techstore.com</p>
+      <p>Phone: +91 98765 43210</p>
+      <p>Chennai, India</p>
+    </div>
+
+    <div class="footer-section">
+      <h3>Follow Us</h3>
+      <div class="social-icons">
+        <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2025 TechStore. All rights reserved.
+  </div>
+</footer>
+
+  <script>
+ // Load all categories from the backend and display them on the homepage
+async function loadCategories() {
+  try {
+    const response = await fetch("http://localhost:5000/api/categories");
+    const categories = await response.json();
+    const container = document.getElementById("categories-list");
+    container.innerHTML = "";
+    categories.forEach(cat => {
+      const div = document.createElement("div");
+      div.className = "category-item";
+      div.innerHTML = `
+        <img src="${cat.image}" alt="${cat.name}" class="category-img"/>
+        <p class="category-name">${cat.name}</p>
+      `;
+      // When a category is clicked, load products for that category
+      div.addEventListener("click", () => loadProductsByCategory(cat.name));
+      container.appendChild(div);
+    });
+  } catch (err) {
+    console.error("Failed to load categories:", err);
+  }
+}
+
+// Load products that belong to a specific category
+async function loadProductsByCategory(categoryName) {
+  try {
+    const response = await fetch("http://localhost:5000/api/products");
+    const products = await response.json();
+    const filtered = products.filter(p => p.category === categoryName);
+    const productContainer = document.getElementById("products-list");
+    productContainer.innerHTML = "";
+    filtered.forEach(prod => {
+      const div = document.createElement("div");
+      div.className = "product-item";
+      div.innerHTML = `
+        <img src="${prod.image}" alt="${prod.name}" class="product-img"/>
+        <h3>${prod.name}</h3>
+        <p>${prod.description}</p>
+        <p style="color: red;">₹${prod.price}</p>
+        <button onclick="addToCart('${prod._id}')">Add to Cart</button>
+      `;
+      productContainer.appendChild(div);
+    });
+  } catch (err) {
+    console.error("Failed to load products by category:", err);
+  }
+}
+
+// Load all products from the backend and show them on the homepage
+async function loadAllProducts() {
+  try {
+    const response = await fetch("http://localhost:5000/api/products");
+    const products = await response.json();
+    const productContainer = document.getElementById("products-list");
+    productContainer.innerHTML = "";
+    products.forEach(prod => {
+      const div = document.createElement("div");
+      div.className = "product-item";
+      div.innerHTML = `
+        <img src="${prod.image}" alt="${prod.name}" class="product-img"/>
+        <h3>${prod.name}</h3>
+        <p>${prod.description}</p>
+        <p style="color: red;">₹${prod.price}</p>
+        <button onclick="addToCart('${prod._id}')">Add to Cart</button>
+      `;
+      productContainer.appendChild(div);
+    });
+  } catch (err) {
+    console.error("Failed to load all products:", err);
+  }
+}
+
+// Add a product to the backend cart for the user "guest"
+// Add a product to the backend cart for the user "guest"
+async function addToCart(productId) {
+  const userId = "guest"; // Static user for guest cart
+
+  try {
+    await fetch("http://localhost:5000/api/cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, productId, quantity: 1 })
+    });
+
+    updateCartCount(); // Refresh the cart count in the navbar
+    
+  } catch (err) {
+    console.error("Error adding to cart:", err);
+    alert("Failed to add to cart");
+  }
+}
+
+// Update the cart count in the navbar from the backend
+async function updateCartCount() {
+  const userId = "guest";
+  try {
+    const res = await fetch(`http://localhost:5000/api/cart/${userId}`);
+    const data = await res.json();
+    
+    const total = data.items
+      .filter(item => item.productId) // ✅ Only count valid products
+      .reduce((sum, item) => sum + item.quantity, 0);
+
+    const countElement = document.getElementById("cart-count");
+    if (countElement) {
+      countElement.textContent = total;
+    }
+  } catch (err) {
+    console.error("Error fetching cart count:", err);
+  }
+}
+
+
+// Call this when DOM is ready
+window.addEventListener("DOMContentLoaded", () => {
+  updateCartCount(); // Load cart count when the page loads
+});
+
+
+// Carousel logic — switch to the next ad slide every 5 seconds
+let currentIndex = 0;
+let slides = [];
+
+function showNextSlide() {
+  if (slides.length === 0) return;
+  slides[currentIndex].classList.remove("active");
+  currentIndex = (currentIndex + 1) % slides.length;
+  slides[currentIndex].classList.add("active");
+}
+
+// Load advertisement banners from backend and show them in carousel
+async function loadAdSlides() {
+  try {
+    const response = await fetch("http://localhost:5000/api/ads");
+    const ads = await response.json();
+    const container = document.querySelector(".slide-container");
+    container.innerHTML = "";
+    ads.forEach((ad, index) => {
+      const div = document.createElement("div");
+      div.className = "slide" + (index === 0 ? " active" : "");
+      div.innerHTML = `
+        <img src="${ad.image}" class="full-ad-image" alt="Ad Slide"/>
+      
+      `;
+      container.appendChild(div);
+    });
+    slides = document.querySelectorAll(".slide");
+    setInterval(showNextSlide, 5000); // Rotate every 5 seconds
+  } catch (error) {
+    console.error("Failed to load ads:", error);
+  }
+}
+
+// Update the cart count in the navbar (placeholder — replace with backend count)
+async function updateCartCount() {
+  const userId = "guest";
+  try {
+    const res = await fetch(`http://localhost:5000/api/cart/${userId}`);
+    const data = await res.json();
+    
+    const total = data.items
+      .filter(item => item.productId) // ✅ Only count valid products
+      .reduce((sum, item) => sum + item.quantity, 0);
+
+    const countElement = document.getElementById("cart-count");
+    if (countElement) {
+      countElement.textContent = total;
+    }
+  } catch (err) {
+    console.error("Error fetching cart count:", err);
+  }
+}
+
+
+// Initialize page content when DOM is ready
+window.addEventListener("DOMContentLoaded", () => {
+  loadCategories();     // Load and display categories
+  loadAllProducts();    // Load and display all products
+  updateCartCount();    // Update cart icon with current count
+  loadAdSlides();       // Load and start banner carousel
+});
+</script>
+</body>
+</html>

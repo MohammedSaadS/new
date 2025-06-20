@@ -1,0 +1,200 @@
+:root {
+  --bg: #1f1f2e;
+  --card-bg: linear-gradient(145deg, #2c2c3c, #1f1f2e);
+  --border: #3a3a4a;
+  --text: #eaeaea;
+
+  --blue: #00d2ff;
+  --green: #d7d7d7;
+  --orange: #f56541;
+  --purple: #a18cd1;
+  --lime: #8ced7b;
+
+  --radius: 10px;
+  --shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --input-bg: #2b2b3d;
+}
+
+/* === Body === */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 30px;
+}
+
+/* === Headings === */
+h1 {
+  text-align: center;
+  font-size: 2em;
+  color: var(--blue);
+  font-family: 'Montserrat', sans-serif;
+  margin-bottom: 30px;
+}
+
+h2 {
+  text-align: center;
+  color: var(--purple);
+  font-family: 'Montserrat', sans-serif;
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+
+/* === Buttons === */
+button {
+  background: var(--green);
+  color: #1f1f2e;
+  padding: 10px 10px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  background: var(--blue);
+  color: #000;
+}
+
+/* === Forms === */
+form {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 25px;
+  margin: 30px auto;
+  max-width: 600px;
+  font-family: 'Roboto', sans-serif;
+}
+
+form input,
+form textarea,
+form select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: 'Open Sans', sans-serif;
+  background-color: var(--input-bg);
+  color: var(--text);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+  border-color: var(--orange);
+  outline: none;
+}
+
+form input::placeholder,
+form textarea::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* === File Input === */
+input[type="file"] {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--input-bg);
+  font-family: 'Open Sans', sans-serif;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background-color: var(--purple);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: var(--orange);
+}
+
+/* === Lists === */
+#category-list,
+#product-list,
+#ad-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 30px;
+}
+
+/* === Cards === */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  width: 260px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  font-family: 'Roboto', sans-serif;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+}
+
+.card img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 2px solid var(--lime);
+}
+
+/* === Ad Banner Images === */
+#ad-list img {
+  width: 300px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid var(--orange);
+}
+
+/* === Ad Preview === */
+#adPreview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  margin-top: 10px;
+  border: 2px solid var(--orange);
+  border-radius: 8px;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  #ad-list img {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+

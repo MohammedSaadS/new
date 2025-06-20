@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Cart - TechStore</title>
+  <style>
+    body {
+      background-color: #181818;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #ff4d4d;
+      font-size: 32px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .cart-item {
+      background-color: #222;
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      gap: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .cart-item:hover {
+      background-color: #2a2a2a;
+    }
+
+    .cart-item img {
+      width: 100px;
+      height: auto;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .cart-details {
+      flex: 1;
+    }
+
+    .cart-details h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      color: #fff;
+    }
+
+    .cart-details p {
+      margin: 6px 0;
+      color: #ccc;
+      font-size: 16px;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quantity-controls button {
+      padding: 4px 10px;
+      font-size: 16px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .quantity-controls span {
+      font-size: 16px;
+    }
+
+    .cart-details .actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .cart-details .actions button {
+      padding: 6px 12px;
+      background-color: #ff4d4d;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .cart-details .actions button:hover {
+      background-color: #e64545;
+    }
+
+    .total {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 30px;
+      color: #ff4d4d;
+      text-align: right;
+    }
+
+    #checkout {
+      display: block;
+      margin: 30px 0;
+      padding: 12px 24px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    #checkout:hover {
+      background-color: #45a049;
+    }
+
+    a.back {
+      display: inline-block;
+      margin-top: 20px;
+      color: #ff4d4d;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    a.back:hover {
+      text-decoration: underline;
+    }
+
+    #empty-message {
+      text-align: center;
+      font-size: 18px;
+      color: #aaa;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Cart</h1>
+  <div id="cart-items"></div>
+  <div class="total" id="total-price"></div>
+  <button id="checkout" style="display: none;">Proceed to Checkout</button>
+  <div id="empty-message"></div>
+  <a href="index.html" class="back">← Continue Shopping</a>
+
+  <script>
+    const userId = "guest";
+
+    async function loadCartDetails() {
+      try {
+        const res = await fetch(`http://localhost:5000/api/cart/${userId}`);
+        const data = await res.json();
+        const items = data.items || [];
+
+        const cartItems = document.getElementById("cart-items");
+        const totalPrice = document.getElementById("total-price");
+        const emptyMessage = document.getElementById("empty-message");
+        const checkoutBtn = document.getElementById("checkout");
+
+        if (!items.length) {
+          cartItems.innerHTML = "";
+          totalPrice.innerText = "";
+          emptyMessage.innerText = "Your cart is empty.";
+          checkoutBtn.style.display = "none";
+          return;
+        }
+
+        emptyMessage.innerText = "";
+        let total = 0;
+        let output = "";
+
+        items.forEach(item => {
+  const prod = item.productId;
+  if (!prod) return; // ✅ Skip null productId (e.g. deleted product)
+
+  const quantity = item.quantity;
+  const subtotal = prod.price * quantity;
+  total += subtotal;
+
+
+          output += `
+            <div class="cart-item">
+              <img src="${prod.image || prod.imageUrl}" alt="${prod.name}" />
+              <div class="cart-details">
+                <h3>${prod.name}</h3>
+                <p>₹${prod.price} each</p>
+                <div class="quantity-controls">
+                  <button onclick="updateQuantity('${prod._id}', ${quantity - 1})">-</button>
+                  <span>${quantity}</span>
+                  <button onclick="updateQuantity('${prod._id}', ${quantity + 1})">+</button>
+                </div>
+                <p>Subtotal: ₹${subtotal}</p>
+                <div class="actions">
+                  <button onclick="removeItem('${prod._id}')">Remove</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        cartItems.innerHTML = output;
+        totalPrice.innerText = `Total: ₹${total}`;
+        checkoutBtn.style.display = "block";
+      } catch (err) {
+        console.error("Cart load error:", err);
+        document.getElementById("empty-message").innerText = "Failed to load cart.";
+      }
+    }
+
+    async function removeItem(productId) {
+      try {
+        await fetch(`http://localhost:5000/api/cart/${userId}/${productId}`, {
+          method: "DELETE"
+        });
+        loadCartDetails();
+      } catch (err) {
+        console.error("Remove error:", err);
+      }
+    }
+
+    async function updateQuantity(productId, newQty) {
+      if (newQty < 1) return;
+
+      try {
+        await fetch(`http://localhost:5000/api/cart/${userId}/${productId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ quantity: newQty })
+        });
+        loadCartDetails();
+      } catch (err) {
+        console.error("Quantity update error:", err);
+      }
+    }
+
+    document.getElementById("checkout").addEventListener("click", () => {
+      alert("Checkout functionality coming soon!");
+    });
+
+    loadCartDetails();
+  </script>
+</body>
+</html>

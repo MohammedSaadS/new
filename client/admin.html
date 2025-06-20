@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="adminStyle.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@600&family=Open+Sans&display=swap" rel="stylesheet">
+  <style>
+    .toggle-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .toggle-buttons button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .btn-cat { background-color: #ff5722; color: white; }
+    .btn-prod { background-color: #009688; color: white; }
+    .btn-banner { background-color: #fdd835; color: black; }
+
+    .toggle-buttons button:hover {
+      transform: scale(1.05);
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <div>
+    <a href="index.html"><button>Back to Home</button></a>
+  </div>
+
+  <h1>Admin Panel</h1>
+
+  <!-- Section Toggle Buttons -->
+  <div class="toggle-buttons">
+    <button class="btn-cat" onclick="showSection('category-section')">Category</button>
+    <button class="btn-prod" onclick="showSection('product-section')">Product</button>
+    <button class="btn-banner" onclick="showSection('banner-section')">Ad Banner</button>
+  </div>
+
+  <!-- Category Section -->
+  <div id="category-section" class="section active">
+    <form id="category-form" enctype="multipart/form-data">
+      <h2>Add Category</h2>
+      <input type="text" name="name" placeholder="Category Name" required>
+      <input type="file" name="image" accept="image/*" required>
+      <button type="submit">Add Category</button>
+    </form>
+
+    <h2>Categories</h2>
+    <div id="category-list"></div>
+  </div>
+
+  <!-- Product Section -->
+  <div id="product-section" class="section">
+    <form id="product-form" enctype="multipart/form-data">
+      <h2>Add Product</h2>
+      <input type="text" name="name" placeholder="Product Name" required>
+      <textarea name="description" placeholder="Description"></textarea>
+      <input type="number" name="price" placeholder="Price (₹)" required step="0.01" min="0">
+      <select name="category" required></select>
+      <input type="file" name="image" accept="image/*" required\\>
+      <button type="submit">Add Product</button>
+    </form>
+
+    <h2>Products</h2>
+    <div id="product-list"></div>
+  </div>
+
+  <!-- Banner Section -->
+  <div id="banner-section" class="section">
+    <form id="adForm" enctype="multipart/form-data">
+      <h2>Upload Ad Banner</h2>
+      <input type="file" name="image" id="adImage" accept="image/*" required />
+      <img id="adPreview" style="margin-top: 10px; display: none;" />
+      <button type="submit">Upload Banner</button>
+    </form>
+
+    <h2>Uploaded Ad Banners</h2>
+    <div id="ad-list"></div>
+  </div>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(id).classList.add('active');
+    }
+
+    const categoryForm = document.getElementById("category-form");
+    const productForm = document.getElementById("product-form");
+    const adForm = document.getElementById("adForm");
+    const adImage = document.getElementById("adImage");
+    const adPreview = document.getElementById("adPreview");
+    const categorySelect = productForm.querySelector("select");
+    const categoryListDiv = document.getElementById("category-list");
+    const productListDiv = document.getElementById("product-list");
+    const adListDiv = document.getElementById("ad-list");
+
+    let productList = [];
+    let currentEditingId = null;
+    let currentCategoryId = null;
+
+
+    async function loadCategories() {
+      const res = await fetch("http://localhost:5000/api/categories");
+      const categories = await res.json();
+
+      categorySelect.innerHTML = categories.map(cat =>
+        `<option value="${cat.name}">${cat.name}</option>`
+      ).join("");
+
+      categoryListDiv.innerHTML = categories.map(cat => `
+  <div class="card">
+    <img src="${cat.image}" alt="${cat.name}" /><br>
+    <strong>${cat.name}</strong><br>
+    <button onclick="editCategory('${cat._id}', '${cat.name}')">Edit</button>
+    <button onclick="deleteCategory('${cat._id}')">Delete</button>
+  </div>
+`).join("");
+    }
+
+    window.deleteCategory = async function (id) {
+      if (confirm("Are you sure you want to delete this category?")) {
+        await fetch(`http://localhost:5000/api/categories/${id}`, {
+          method: "DELETE"
+        });
+        alert("Category deleted");
+        loadCategories();
+      }
+    };
+
+    async function loadProducts() {
+      const res = await fetch("http://localhost:5000/api/products");
+      productList = await res.json();
+      renderProducts();
+    }
+
+    function renderProducts() {
+      productListDiv.innerHTML = productList.map(product => `
+        <div class="card">
+          <img src="${product.image}" alt="${product.name}" /><br>
+          <strong>${product.name}</strong><br>
+          ₹${product.price}<br>
+          ${product.description}<br>
+          Category: ${product.category}<br>
+          <button onclick="editProduct('${product._id}')" title="Edit">
+  <i class="fas fa-edit"></i>
+</button>
+<button onclick="deleteProduct('${product._id}')" title="Delete">
+  <i class="fas fa-trash-alt"></i>
+</button>
+        </div>
+      `).join("");
+    }
+
+    window.editProduct = function (id) {
+      const product = productList.find(p => p._id === id);
+      if (!product) return;
+
+      productForm.name.value = product.name;
+      productForm.description.value = product.description;
+      productForm.price.value = product.price;
+      productForm.category.value = product.category;
+      currentEditingId = id;
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    window.deleteProduct = async function (id) {
+      if (confirm("Are you sure you want to delete this product?")) {
+        await fetch(`http://localhost:5000/api/products/${id}`, {
+          method: "DELETE"
+        });
+        alert("Product deleted");
+        loadProducts();
+      }
+    };
+
+    categoryForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(categoryForm);
+      await fetch("http://localhost:5000/api/categories", {
+        method: "POST",
+        body: formData
+      });
+      alert("Category added");
+      categoryForm.reset();
+      loadCategories();
+    });
+
+    productForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(productForm);
+      let url = "http://localhost:5000/api/products";
+      let method = "POST";
+
+      if (currentEditingId) {
+        url = `http://localhost:5000/api/products/${currentEditingId}`;
+        method = "PUT";
+      }
+
+      await fetch(url, {
+        method,
+        body: formData
+      });
+
+      alert(currentEditingId ? "Product updated" : "Product added");
+      productForm.reset();
+      currentEditingId = null;
+      loadProducts();
+    });
+
+    adImage.addEventListener("change", function () {
+      const [file] = this.files;
+      if (file) {
+        adPreview.src = URL.createObjectURL(file);
+        adPreview.style.display = "block";
+      }
+    });
+
+    adForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(adForm);
+      const res = await fetch("http://localhost:5000/api/ads", {
+        method: "POST",
+        body: formData
+      });
+      if (res.ok) {
+        alert("Ad banner uploaded!");
+        adForm.reset();
+        adPreview.style.display = "none";
+        loadAds();
+      } else {
+        alert("Failed to upload.");
+      }
+    });
+
+    async function loadAds() {
+      const res = await fetch("http://localhost:5000/api/ads");
+      const ads = await res.json();
+      adListDiv.innerHTML = ads.map(ad => `
+        <img src="${ad.image}" alt="Ad" style="margin: 10px;" />
+      `).join("");
+    }
+
+    loadCategories();
+    loadProducts();
+    loadAds();
+  </script>
+</body>
+</html>
